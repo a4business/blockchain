@@ -17,6 +17,11 @@ const getPublicFromWallet = (): string => {
     return key.getPublic().encode('hex');
 };
 
+const genOneWallet = (): any[] => {
+   const keyPair = EC.genKeyPair();
+   return [ keyPair.getPublic().encode('hex'),keyPair.getPrivate().toString(16) ];
+}
+
 const generatePrivateKey = (): string => {
     const keyPair = EC.genKeyPair();
     const privateKey = keyPair.getPrivate();
@@ -132,5 +137,5 @@ const createTransaction = (receiverAddress: string, amount: number, privateKey: 
     return tx;
 };
 
-export {createTransaction, getPublicFromWallet,
+export {createTransaction, getPublicFromWallet, genOneWallet,
     getPrivateFromWallet, getBalance, generatePrivateKey, initWallet, deleteWallet, findUnspentTxOuts};

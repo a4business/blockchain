@@ -6,7 +6,7 @@ import {
 } from './transaction';
 import {addToTransactionPool, getTransactionPool, updateTransactionPool} from './transactionPool';
 import {hexToBinary} from './util';
-import {createTransaction, findUnspentTxOuts, getBalance, getPrivateFromWallet, getPublicFromWallet} from './wallet';
+import {createTransaction, findUnspentTxOuts, getBalance,genOneWallet, getPrivateFromWallet, getPublicFromWallet} from './wallet';
 
 class Block {
 
@@ -294,6 +294,6 @@ const handleReceivedTransaction = (transaction: Transaction) => {
 export {
     Block, getBlockchain, getUnspentTxOuts, getLatestBlock, sendTransaction,
     generateRawNextBlock, generateNextBlock, generatenextBlockWithTransaction,
-    handleReceivedTransaction, getMyUnspentTransactionOutputs,
+    handleReceivedTransaction, getMyUnspentTransactionOutputs,genOneWallet,
     getAccountBalance, isValidBlockStructure, replaceChain, addBlockToChain
 };
