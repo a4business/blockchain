@@ -46,9 +46,11 @@ const deleteWallet = () => {
 };
 
 const getBalance = (address: string, unspentTxOuts: UnspentTxOut[]): number => {
+console.log('Getting balance for:' + address );
     return _(findUnspentTxOuts(address, unspentTxOuts))
         .map((uTxO: UnspentTxOut) => uTxO.amount)
         .sum();
+        
 };
 
 const findUnspentTxOuts = (ownerAddress: string, unspentTxOuts: UnspentTxOut[]) => {

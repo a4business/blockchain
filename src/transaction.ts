@@ -36,12 +36,22 @@ class TxOut {
     }
 }
 
+
+class CDR {
+    public tstamp: number;
+    public from: string;
+    public to: string;
+    public duration: number;
+    public status: string;
+} 
+
 class Transaction {
 
     public id: string;
 
     public txIns: TxIn[];
     public txOuts: TxOut[];
+    public cdrs: CDR;
 }
 
 const getTransactionId = (transaction: Transaction): string => {
@@ -340,5 +350,5 @@ const isValidAddress = (address: string): boolean => {
 export {
     processTransactions, signTxIn, getTransactionId, isValidAddress, validateTransaction,
     UnspentTxOut, TxIn, TxOut, getCoinbaseTransaction, getPublicKey, hasDuplicates,
-    Transaction
+    Transaction,CDR
 };

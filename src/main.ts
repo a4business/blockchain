@@ -2,8 +2,8 @@ import * as  bodyParser from 'body-parser';
 import * as express from 'express';
 import * as _ from 'lodash';
 import {
-    Block, generateNextBlock, generatenextBlockWithTransaction, generateRawNextBlock, getAccountBalance, genOneWallet,
-    getBlockchain, getMyUnspentTransactionOutputs, getUnspentTxOuts, sendTransaction
+    Block, generateNextBlock, generatenextBlockWithTransaction, generateRawNextBlock, getWalletBalance,getAccountBalance, genOneWallet,
+    getBlockchain, getMyUnspentTransactionOutputs, getUnspentTxOuts, sendTransaction, sendVoipTransaction
 } from './blockchain';
 import {connectToPeers, getSockets, initP2PServer} from './p2p';
 import {UnspentTxOut} from './transaction';
@@ -81,6 +81,12 @@ const initHttpServer = (myHttpPort: number) => {
         res.send({'balance': balance});
     });
 
+    app.get('/wallet_balance/:address', (req, res) => {
+        const address = req.params.address;
+        const balance: number = getWalletBalance(address);
+        res.send({'balance': balance,'address':address});
+    });
+
     app.get('/gen_wallet', (req, res) => {
         const new_wallet = genOneWallet();
         res.send({ 'new_wallet': new_wallet });
@@ -103,16 +109,24 @@ const initHttpServer = (myHttpPort: number) => {
         }
     });
 
+
     app.post('/sendTransaction', (req, res) => {
         try {
             const address = req.body.address;
             const amount = req.body.amount;
+            const txType = req.body.txType;
 
             if (address === undefined || amount === undefined) {
                 throw Error('invalid address or amount');
             }
-            const resp = sendTransaction(address, amount);
-            res.send(resp);
+            if(txType == 'Voip'){
+             const resp = sendVoipTransaction(address, amount);
+             res.send(resp);
+            } else {
+             const resp = sendTransaction(address, amount);
+             res.send(resp);
+            }  
+            
         } catch (e) {
             console.log(e.message);
             res.status(400).send(e.message);
