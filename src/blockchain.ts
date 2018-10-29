@@ -2,11 +2,11 @@ import * as CryptoJS from 'crypto-js';
 import * as _ from 'lodash';
 import {broadcastLatest, broadCastTransactionPool} from './p2p';
 import {
-    getCoinbaseTransaction, isValidAddress, processTransactions, Transaction, UnspentTxOut
+    getCoinbaseTransaction, isValidAddress, processTransactions, Transaction, CDR, UnspentTxOut
 } from './transaction';
 import {addToTransactionPool, getTransactionPool, updateTransactionPool} from './transactionPool';
 import {hexToBinary} from './util';
-import {createTransaction, findUnspentTxOuts, getBalance,genOneWallet, getPrivateFromWallet, getPublicFromWallet} from './wallet';
+import {createTransaction, findUnspentTxOuts, getBalance, genOneWallet,  getPrivateFromWallet, getPublicFromWallet} from './wallet';
 
 class Block {
 
@@ -36,7 +36,8 @@ const genesisTransaction = {
         'address': '04bfcab8722991ae774db48f934ca79cfb7dd991229153b9f732ba5334aafcd8e7266e47076996b55a14bf9913ee3145ce0cfc1372ada8ada74bd287450313534a',
         'amount': 50
     }],
-    'id': 'e655f6a5f26dc9b4cac6e46f52336428287759cf81ef5ff10854f69d68f43fa3'
+    'id': 'e655f6a5f26dc9b4cac6e46f52336428287759cf81ef5ff10854f69d68f43fa3',
+    'cdrs': null
 };
 
 const genesisBlock: Block = new Block(
@@ -144,12 +145,34 @@ const getAccountBalance = (): number => {
     return getBalance(getPublicFromWallet(), getUnspentTxOuts());
 };
 
+const getWalletBalance = (address: string): number => {
+    return getBalance(address, getUnspentTxOuts());
+};
+
 const sendTransaction = (address: string, amount: number): Transaction => {
     const tx: Transaction = createTransaction(address, amount, getPrivateFromWallet(), getUnspentTxOuts(), getTransactionPool());
     addToTransactionPool(tx, getUnspentTxOuts());
     broadCastTransactionPool();
     return tx;
 };
+
+
+const sendVoipTransaction = (address: string, amount: number): Transaction => {
+
+    const tx: Transaction = createTransaction(address, amount, getPrivateFromWallet(), getUnspentTxOuts(), getTransactionPool());
+    
+    const txCDR: CDR = new CDR();
+    txCDR.from = getPublicFromWallet();
+    txCDR.to = address;
+    txCDR.duration = 10;
+    txCDR.status = 'ANSWERED';    
+    tx.cdrs = txCDR;
+    console.log("Got VOIP transaction");
+    addToTransactionPool(tx, getUnspentTxOuts());
+    broadCastTransactionPool();
+    return tx;
+};
+
 
 const calculateHashForBlock = (block: Block): string =>
     calculateHash(block.index, block.previousHash, block.timestamp, block.data, block.difficulty, block.nonce);
@@ -233,6 +256,7 @@ const isValidChain = (blockchainToValidate: Block[]): UnspentTxOut[] => {
     };
 
     if (!isValidGenesis(blockchainToValidate[0])) {
+        console.log('New blockchain Genesis invalid!');
         return null;
     }
     /*
@@ -275,6 +299,7 @@ const addBlockToChain = (newBlock: Block): boolean => {
 const replaceChain = (newBlocks: Block[]) => {
     const aUnspentTxOuts = isValidChain(newBlocks);
     const validChain: boolean = aUnspentTxOuts !== null;
+    console.log('Received blockchain has no aUnspentTxOuts');
     if (validChain &&
         getAccumulatedDifficulty(newBlocks) > getAccumulatedDifficulty(getBlockchain())) {
         console.log('Received blockchain is valid. Replacing current blockchain with received blockchain');
@@ -292,8 +317,8 @@ const handleReceivedTransaction = (transaction: Transaction) => {
 };
 
 export {
-    Block, getBlockchain, getUnspentTxOuts, getLatestBlock, sendTransaction,
+    Block, getBlockchain, getUnspentTxOuts, getLatestBlock, sendTransaction,sendVoipTransaction,
     generateRawNextBlock, generateNextBlock, generatenextBlockWithTransaction,
-    handleReceivedTransaction, getMyUnspentTransactionOutputs,genOneWallet,
-    getAccountBalance, isValidBlockStructure, replaceChain, addBlockToChain
+    handleReceivedTransaction, getMyUnspentTransactionOutputs,  genOneWallet,
+    getAccountBalance,getWalletBalance, isValidBlockStructure, replaceChain, addBlockToChain
 };
