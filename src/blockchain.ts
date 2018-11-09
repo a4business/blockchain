@@ -159,7 +159,7 @@ const sendTransaction = (address: string, amount: number): Transaction => {
 
 // From Wallet to Wallet // 
 const sendWalletTransaction = (from_address:string; from_private_key: string; to_address: string, amount: number): Transaction => {
-    const tx: Transaction = createTransaction(address, amount, from_private_key, getUnspentTxOuts(), getTransactionPool());
+    const tx: Transaction = createTransaction(to_address, amount, from_private_key, getUnspentTxOuts(), getTransactionPool());
     addToTransactionPool(tx, getUnspentTxOuts());
     broadCastTransactionPool();
     return tx;

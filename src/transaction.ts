@@ -41,11 +41,16 @@ class CDR {
     public tstamp: number;
     public from: string;
     public to: string;
+<<<<<<< HEAD
     public from_phone: string;
     public to_phone: string;
     public duration: number;
     public status: string;
     
+=======
+    public duration: number;
+    public status: string;
+>>>>>>> ab9c56245c8d79b2ced036fc5d69df2d5a26ad91
 } 
 
 class Transaction {
