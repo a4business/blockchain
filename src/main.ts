@@ -113,21 +113,29 @@ const initHttpServer = (myHttpPort: number) => {
     app.post('/sendTransaction', (req, res) => {
         try {
             const address = req.body.address;
+            const from_address = req.body.from_address;
             const amount = req.body.amount;
             const txType = req.body.txType;
+            const status = req.body.status;
+            const from_phone = req.body.from_phone;
+            const to_phone = req.body.to_phone;
 
-            if (address === undefined || amount === undefined) {
+            if (address === undefined  || address === "" || amount === undefined || amount === 0) {
                 throw Error('invalid address or amount');
             }
+            
             if(txType == 'Voip'){
-             const resp = sendVoipTransaction(address, amount);
+             const resp = sendVoipTransaction(address, amount, status, from_phone, to_phone, from_address);
              res.send(resp);
-            } else {
+            }elseif(txType == 'Wallet'){
+             const resp = sendWalletTransaction(address, private_key, to_address, amount);
+             res.send(resp);
+            }else{
              const resp = sendTransaction(address, amount);
              res.send(resp);
             }  
             
-        } catch (e) {
+        }catch(e) {
             console.log(e.message);
             res.status(400).send(e.message);
         }

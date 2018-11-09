@@ -82,7 +82,7 @@ const getAdjustedDifficulty = (latestBlock: Block, aBlockchain: Block[]) => {
     const timeTaken: number = latestBlock.timestamp - prevAdjustmentBlock.timestamp;
     if (timeTaken < timeExpected / 2) {
         return prevAdjustmentBlock.difficulty + 1;
-    } else if (timeTaken > timeExpected * 2) {
+    } else if ( (timeTaken > timeExpected * 2) && prevAdjustmentBlock.difficulty > 0) {
         return prevAdjustmentBlock.difficulty - 1;
     } else {
         return prevAdjustmentBlock.difficulty;
@@ -149,6 +149,7 @@ const getWalletBalance = (address: string): number => {
     return getBalance(address, getUnspentTxOuts());
 };
 
+// From node //
 const sendTransaction = (address: string, amount: number): Transaction => {
     const tx: Transaction = createTransaction(address, amount, getPrivateFromWallet(), getUnspentTxOuts(), getTransactionPool());
     addToTransactionPool(tx, getUnspentTxOuts());
@@ -156,18 +157,30 @@ const sendTransaction = (address: string, amount: number): Transaction => {
     return tx;
 };
 
+// From Wallet to Wallet // 
+const sendWalletTransaction = (from_address:string; from_private_key: string; to_address: string, amount: number): Transaction => {
+    const tx: Transaction = createTransaction(address, amount, from_private_key, getUnspentTxOuts(), getTransactionPool());
+    addToTransactionPool(tx, getUnspentTxOuts());
+    broadCastTransactionPool();
+    return tx;
+};
 
-const sendVoipTransaction = (address: string, amount: number): Transaction => {
+const sendVoipTransaction = (address: string, amount: number,status: string,from_phone: string, to_phone: string,from_address: string): Transaction => {
 
     const tx: Transaction = createTransaction(address, amount, getPrivateFromWallet(), getUnspentTxOuts(), getTransactionPool());
     
     const txCDR: CDR = new CDR();
-    txCDR.from = getPublicFromWallet();
+    txCDR.tstamp = new Date().getTime();
+   // txCDR.from = getPublicFromWallet();
+    txCDR.from =from_address;
     txCDR.to = address;
-    txCDR.duration = 10;
-    txCDR.status = 'ANSWERED';    
+    txCDR.from_phone = from_phone;
+    txCDR.to_phone = to_phone;
+    txCDR.duration = amount;
+    txCDR.status = status;    
     tx.cdrs = txCDR;
-    console.log("Got VOIP transaction");
+    
+    console.log("Got VOIP transaction " + from_phone + ' -> ' + to_phone );
     addToTransactionPool(tx, getUnspentTxOuts());
     broadCastTransactionPool();
     return tx;
@@ -240,6 +253,11 @@ const hashMatchesBlockContent = (block: Block): boolean => {
 };
 
 const hashMatchesDifficulty = (hash: string, difficulty: number): boolean => {
+    if( difficulty < 0 ){
+      console.log(" Got WRONG Dificulty to check:" + difficulty );
+      difficulty = 1; 
+    }  
+    
     const hashInBinary: string = hexToBinary(hash);
     const requiredPrefix: string = '0'.repeat(difficulty);
     return hashInBinary.startsWith(requiredPrefix);
