@@ -3,7 +3,10 @@ import {existsSync, readFileSync, unlinkSync, writeFileSync} from 'fs';
 import * as _ from 'lodash';
 import {getPublicKey, getTransactionId, signTxIn, Transaction, TxIn, TxOut, UnspentTxOut} from './transaction';
 
+
 const EC = new ec('secp256k1');
+const keccak256 = require('js-sha3').keccak256;
+
 const privateKeyLocation = process.env.PRIVATE_KEY || 'node/wallet/private_key';
 
 const getPrivateFromWallet = (): string => {
@@ -19,7 +22,7 @@ const getPublicFromWallet = (): string => {
 
 const genOneWallet = (): any[] => {
    const keyPair = EC.genKeyPair();
-   return [ keyPair.getPublic().encode('hex'),keyPair.getPrivate().toString(16) ];
+   return [ keyPair.getPublic().encode('hex'),keyPair.getPrivate().toString(16), keccak256(keyPair.getPublic().encode('hex')).slice(-20)];
 }
 
 const generatePrivateKey = (): string => {

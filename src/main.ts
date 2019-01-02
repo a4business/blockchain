@@ -89,7 +89,7 @@ const initHttpServer = (myHttpPort: number) => {
 
     app.get('/gen_wallet', (req, res) => {
         const new_wallet = genOneWallet();
-        res.send({ 'new_wallet': new_wallet });
+        res.send({ 'new_wallettt': new_wallet });
     });
 
     app.get('/address', (req, res) => {
@@ -116,40 +116,29 @@ const initHttpServer = (myHttpPort: number) => {
             const from_address = req.body.from_address;
             const amount = req.body.amount;
             const txType = req.body.txType;
-<<<<<<< HEAD
+
             const status = req.body.status;
             const from_phone = req.body.from_phone;
             const to_phone = req.body.to_phone;
-=======
->>>>>>> ab9c56245c8d79b2ced036fc5d69df2d5a26ad91
+
 
             if (address === undefined  || address === "" || amount === undefined || amount === 0) {
                 throw Error('invalid address or amount');
             }
-<<<<<<< HEAD
             
             if(txType == 'Voip'){
              const resp = sendVoipTransaction(address, amount, status, from_phone, to_phone, from_address);
              res.send(resp);
-            }elseif(txType == 'Wallet'){
-             const resp = sendWalletTransaction(address, private_key, to_address, amount);
+            }else if(txType == 'Wallet'){
+            // const resp = sendWalletTransaction(address, private_key, to_address, amount);
+             const resp = sendVoipTransaction(address, amount, status, from_phone, to_phone, from_address);
              res.send(resp);
             }else{
-=======
-            if(txType == 'Voip'){
-             const resp = sendVoipTransaction(address, amount);
-             res.send(resp);
-            } else {
->>>>>>> ab9c56245c8d79b2ced036fc5d69df2d5a26ad91
              const resp = sendTransaction(address, amount);
              res.send(resp);
             }  
             
-<<<<<<< HEAD
-        }catch(e) {
-=======
         } catch (e) {
->>>>>>> ab9c56245c8d79b2ced036fc5d69df2d5a26ad91
             console.log(e.message);
             res.status(400).send(e.message);
         }

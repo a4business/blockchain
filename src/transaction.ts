@@ -45,9 +45,7 @@ class CDR {
     public to_phone: string;
     public duration: number;
     public status: string;
-    
-    public duration: number;
-    public status: string;
+
 
 } 
 
