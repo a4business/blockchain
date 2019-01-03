@@ -20,6 +20,7 @@ const getPublicFromWallet = (): string => {
     return key.getPublic().encode('hex');
 };
 
+// Pub key, Private Key, shortcut //
 const genOneWallet = (): any[] => {
    const keyPair = EC.genKeyPair();
    return [ keyPair.getPublic().encode('hex'),keyPair.getPrivate().toString(16), keccak256(keyPair.getPublic().encode('hex')).slice(-40)];

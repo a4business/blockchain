@@ -89,7 +89,7 @@ const initHttpServer = (myHttpPort: number) => {
 
     app.get('/gen_wallet', (req, res) => {
         const new_wallet = genOneWallet();
-        res.send({ 'new_wallettt': new_wallet });
+        res.send({ 'new_wallet': new_wallet });
     });
 
     app.get('/address', (req, res) => {
