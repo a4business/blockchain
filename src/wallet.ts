@@ -22,7 +22,7 @@ const getPublicFromWallet = (): string => {
 
 const genOneWallet = (): any[] => {
    const keyPair = EC.genKeyPair();
-   return [ keyPair.getPublic().encode('hex'),keyPair.getPrivate().toString(16), keccak256(keyPair.getPublic().encode('hex')).slice(-20)];
+   return [ keyPair.getPublic().encode('hex'),keyPair.getPrivate().toString(16), keccak256(keyPair.getPublic().encode('hex')).slice(-40)];
 }
 
 const generatePrivateKey = (): string => {
